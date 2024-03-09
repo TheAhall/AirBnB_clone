@@ -64,8 +64,11 @@ class BaseModel:
         if obj_dict is None or len(obj_dict) == 0:
             return cls()
 
+        new_instance = cls()
         for key, value in obj_dict.items():
             if key == 'created_at' or key == 'updated_at':
                 obj_dict[key] = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
+            else:
+                setattr(new_instance, key, value)
 
-        return cls(**obj_dict)
+        return new_instance
