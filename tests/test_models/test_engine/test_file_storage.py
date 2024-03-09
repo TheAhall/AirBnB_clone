@@ -2,53 +2,67 @@
 import unittest
 import os
 import models
+import json
 
 from models.engine.file_storage import FileStorage
 from models.base_model import BaseModel
-from models.user import User
-from models.amenity import Amenity
-from models.state import State
-from models.city import City
-from models.place import Place
-from models.review import Review
 
 class TestFileStorage(unittest.TestCase):
     def setUp(self):
-        self.b = BaseModel()
-        self.u = User()
-        self.a = Amenity()
-        self.s = State()
-        self.c = City()
-        self.p = Place()
-        self.r = Review()
+        self.file_path = "file.json"
         self.storage = FileStorage()
-        self.storage.save()
-        if os.path.exits("file.json"):
-            pass
-        else:
-            os.mknod("file.json")
-    def tearDown(self):
-        del self.b
-        del self.u
-        del self.a
-        del self.s
-        del self.c
-        del self.p
-        del self.r
-        del self.storage
-        if os.path.exits("file.json"):
-            os.remove("file.json")
-    def test_all(self):
-        val = self.storage.all()
-        self.asserIsNotNone(val)
-        self.assertEqual(type(val), dict)
-    def test_new(self):
-        val = self.storage.all()
-        self.u.name = "Neima"
-        self.u.id = "2121"
-        val2 = self.storage.new(self.u)
-        key = "{}.{}".format(self.u.__class__.__name__, self.u.id)
-        self.assertIsNotNone(val[key])
+        self.storage._FileStorage__file_path = self.file_path
+        self.model = BaseModel()
+        self.model.name = "Test Model"
+        self.model.my_number = 123
+        self.model.save()
 
-if __name__ == "__main__":
+    def tearDown(self):
+        if os.path.exists(self.file_path):
+            os.remove(self.file_path)
+
+    def test_all(self):
+        all_objects = self.storage.all()
+        print("All Objects:", all_objects)
+        self.assertIsNotNone(all_objects)
+        self.assertIsInstance(all_objects, dict)
+        self.assertIn("BaseModel.{}".format(self.model.id), all_objects)
+        self.assertEqual(all_objects["BaseModel.{}".format(self.model.id)], self.model)
+
+    def test_new(self):
+        new_model = BaseModel()
+        new_model.name = "New Test Model"
+        new_model.my_number = 456
+        self.assertNotIn("BaseModel.{}".format(new_model.id), self.storage.all())
+        self.storage.new(new_model)
+        self.assertIn("BaseModel.{}".format(new_model.id), self.storage.all())
+        self.assertEqual(self.storage.all()["BaseModel.{}".format(new_model.id)], new_model)
+
+    def test_save_reload(self):
+        self.storage.save()
+        self.assertTrue(os.path.exists(self.file_path))
+
+        with open(self.file_path, 'r') as file:
+            data = json.load(file)
+        print("Data written to file:", data)
+
+        self.assertIn("BaseModel.{}".format(self.model.id), data)
+        self.assertEqual(data["BaseModel.{}".format(self.model.id)]['name'], self.model.name)
+        self.assertEqual(data["BaseModel.{}".format(self.model.id)]['my_number'], self.model.my_number)
+
+        # Now let's reload the storage
+        new_storage = FileStorage()
+        new_storage._FileStorage__file_path = self.file_path
+        new_storage.reload()
+        reloaded_objects = new_storage.all()
+
+        self.assertIn("BaseModel.{}".format(self.model.id), reloaded_objects)
+        reloaded_model = reloaded_objects["BaseModel.{}".format(self.model.id)]
+        self.assertIsInstance(reloaded_model, BaseModel)
+        self.assertEqual(reloaded_model.id, self.model.id)
+        self.assertEqual(reloaded_model.name, self.model.name)
+        self.assertEqual(reloaded_model.my_number, self.model.my_number)
+
+
+if __name__ == '__main__':
     unittest.main()
