@@ -52,3 +52,20 @@ class BaseModel:
         obj_dict['updated_at'] = self.updated_at.isoformat()
         return obj_dict
 
+    @classmethod
+    def from_dict(cls, obj_dict):
+        """
+        Creates a new instance of BaseModel from a dictionary representation.
+        Args:
+            obj_dict: A dictionary representing the BaseModel instance.
+        Returns:
+            A new instance of BaseModel.
+        """
+        if obj_dict is None or len(obj_dict) == 0:
+            return cls()
+
+        for key, value in obj_dict.items():
+            if key == 'created_at' or key == 'updated_at':
+                obj_dict[key] = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
+
+        return cls(**obj_dict)

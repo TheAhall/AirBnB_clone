@@ -34,13 +34,13 @@ class TestBaseModel(unittest.TestCase):
         self.assertEqual(self.model.to_dict(), expected_dict)
 
     def test_from_dict_method(self):
-        data = {
+        obj_dict = {
             'id': '1234',
             'created_at': '2022-01-01T12:00:00',
             'updated_at': '2022-01-02T12:00:00',
             '__class__': 'BaseModel'
         }
-        new_model = BaseModel(**data)
+        new_model = BaseModel.from_dict(obj_dict)
         self.assertEqual(new_model.id, '1234')
         self.assertEqual(new_model.created_at, datetime(2022, 1, 1, 12, 0, 0))
         self.assertEqual(new_model.updated_at, datetime(2022, 1, 2, 12, 0, 0))
