@@ -19,7 +19,6 @@ new_classes = {'BaseModel': BaseModel, 'User': User, 'State': State,
                'Review': Review}
 
 
-# Declare the HBNBCommand class
 class HBNBCommand(cmd.Cmd):
     """
     command interpreter
@@ -27,8 +26,7 @@ class HBNBCommand(cmd.Cmd):
     prompt = "(hbnb) "
 
     def do_quit(self, line):
-        """ Quit command to exit the program.
-        """
+        """ Quit command to exit the program"""
         return True
 
     def do_EOF(self, line):
@@ -146,23 +144,19 @@ class HBNBCommand(cmd.Cmd):
             """ Execute <class name>.all()"""
             if line[0] == 'all':
                 self.do_all(splitline[0])
-                """Execute <class name>.count() """
             elif line[0] == 'count':
                 for key in models.storage.all():
                     if splitline[0] == key.split(".")[0]:
                         count += 1
                 print(count)
-                """Execute <class name>.show(<id>) """
             elif line[0] == 'show':
                 id = line[1].split(')')
                 str_id = str(splitline[0]) + " " + str(id[0])
                 self.do_show(str_id)
-                """Execute <class name>.destroy(<id>)"""
             elif line[0] == 'destroy':
                 id = line[1].split(')')
                 str_id = str(splitline[0]) + " " + str(id[0])
                 self.do_destroy(str_id)
-                """Execute <class name>.update(<id>"""
             elif line[0] == 'update':
                 update = line[1].split(')')
                 split = update[0].split('{')
@@ -179,7 +173,7 @@ class HBNBCommand(cmd.Cmd):
                         key_value = row.split(':')
                         str_id = str(splitline[0]) + " " + str(id) + \
                             " " + str(key_value[0]) + " " + str(key_value[1])
-                        self.do_update(str_id)
+                    self.do_update(str_id)
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
