@@ -178,6 +178,5 @@ class HBNBCommand(cmd.Cmd):
                             " " + str(key_value[0]) + " " + str(key_value[1])
                         self.do_update(str_id)
 
-
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
