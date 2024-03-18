@@ -1,0 +1,4 @@
+#!/bin/bash
+git add .
+git commit -m '0x01. AirBnB clone - Web static'
+git push
